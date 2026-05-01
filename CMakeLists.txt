@@ -12,6 +12,15 @@ project(
   VERSION ${PROJECT_VERSION}
   )
 
+add_compile_options(
+    $<$<COMPILE_LANGUAGE:C>:-fdump-tree-optimized-graph>
+    $<$<COMPILE_LANGUAGE:C>:-fstack-usage>
+
+    $<$<COMPILE_LANGUAGE:CXX>:-fdump-tree-optimized-graph>
+    $<$<COMPILE_LANGUAGE:CXX>:-fstack-usage>
+    $<$<COMPILE_LANGUAGE:CXX>:-fdump-lang-class>
+)
+
 # Sets Python3_FIND_STRATEGY to "LOCATION"
 cmake_policy(SET CMP0094 NEW)
 
@@ -28,18 +37,8 @@ endif()
 include(ProjectOptions.cmake)
 
 # link time optimizations to disable LTO run cmake with -DDISABLE_LTO
-if(NOT DEFINED DISABLE_LTO
-   AND NOT DEVELOPER_MODE
-   AND NOT BOARD STREQUAL DWARF
-   AND CMAKE_CROSSCOMPILING # This will not force LTO for unittests and png2font, because those are
-                            # build natively
-   )
-  set(COMPILE_WITH_LTO ON)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-else()
-  set(COMPILE_WITH_LTO OFF)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
-endif()
+set(COMPILE_WITH_LTO OFF)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
 
 # Check GCC Version
 get_recommended_gcc_version(RECOMMENDED_TOOLCHAIN_VERSION)
